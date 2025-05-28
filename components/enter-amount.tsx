@@ -8,8 +8,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card"
 import { useApp } from "@/lib/context"
 import { convertCurrency, formatFiat, formatXRP } from "@/lib/utils"
+import {
+  useWeb3AuthConnect,
+  useWeb3AuthDisconnect,
+  useWeb3AuthUser,
+  useWeb3Auth
+} from "@web3auth/modal/react";
+import {getAccounts, getBalance, signMessage, signAndSendTransaction} from "@/lib/xrplRPC";
+
 
 export function EnterAmount() {
+  const { connect, isConnected, loading: connectLoading, error: connectError } = useWeb3AuthConnect();
+  const { disconnect, loading: disconnectLoading, error: disconnectError } = useWeb3AuthDisconnect();
+  const { userInfo } = useWeb3AuthUser();
+  const { provider } = useWeb3Auth();
+
   const { state, dispatch } = useApp()
   const router = useRouter()
 
@@ -65,13 +78,23 @@ export function EnterAmount() {
   const handleNext = () => {
     // Check if this is a cross-currency transaction
     if (state.selectedCurrency !== "XRP" || state.targetCurrency !== "XRP") {
-      // Go to route confirmation page for cross-currency transactions
-      router.push("/route-confirmation")
+      // 크로스 커런시 
+      const result = () => {
+        try {
+          if(!provider || state.receiverAddress) {
+            return Error
+          }
+          //signAndSendTransaction(provider, Number(state.amountInput), state.receiverAddress)
+          console.log("sign and send transaction arguments:" provider, state.amountInput, state.receiverAddress)
+        } catch (error) {
+          console.log(error)
+        }
+      } 
     } else {
       // Go directly to confirmation for XRP-to-XRP transactions
       router.push("/confirm")
     }
-  }
+  }//send버튼눌렀을때돌아가는로직
 
   const isCrossCurrency = state.selectedCurrency !== "XRP" || state.targetCurrency !== "XRP"
 
@@ -103,7 +126,7 @@ export function EnterAmount() {
                     value={state.amountInput}
                     onChange={(e) => handleAmountChange(e.target.value)}
                     className="flex-1 h-12 text-xl font-medium border-gray-200"
-                  />
+                  />      //여기서 보낼 값을 받는다.
                   <Select value={state.selectedCurrency} onValueChange={handleCurrencyChange}>
                     <SelectTrigger className="w-24 h-12 border-gray-200 font-medium">
                       <SelectValue />

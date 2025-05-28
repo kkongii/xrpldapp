@@ -69,7 +69,7 @@ export interface AppState {
   crossCurrency: CrossCurrencyState
 
   // Transaction flow
-  receiverAddress: string | null
+  receiverAddress: string
   amountInput: string
   selectedCurrency: "XRP" | "USD" | "KRW"
   targetCurrency: "XRP" | "USD" | "KRW"

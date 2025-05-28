@@ -40,7 +40,7 @@ const initialState: AppState = {
   historyFilter: "all",
   isLoadingHistory: false,
   historyError: null,
-  receiverAddress: null,
+  receiverAddress: "",
   amountInput: "",
   selectedCurrency: "XRP",
   convertedXrp: 0,
@@ -63,7 +63,7 @@ type Action =
   | { type: "SET_FIAT_RATE"; payload: number }
   | { type: "SET_LOADING_BALANCE"; payload: boolean }
   | { type: "SET_BALANCE_ERROR"; payload: string | null }
-  | { type: "SET_RECEIVER_ADDRESS"; payload: string | null }
+  | { type: "SET_RECEIVER_ADDRESS"; payload: string }
   | { type: "SET_AMOUNT_INPUT"; payload: string }
   | { type: "SET_SELECTED_CURRENCY"; payload: "XRP" | "USD" | "KRW" }
   | { type: "SET_CONVERTED_XRP"; payload: number }

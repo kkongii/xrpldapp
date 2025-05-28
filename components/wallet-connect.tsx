@@ -13,6 +13,12 @@ import { ErrorBanner } from "@/components/ui/error-banner"
 import { useApp } from "@/lib/context"
 import { xrplService } from "@/lib/xrpl-service"
 import { validateXRPAddress } from "@/lib/utils"
+import {
+  useWeb3AuthConnect,
+  useWeb3AuthDisconnect,
+  useWeb3AuthUser,
+  useWeb3Auth
+} from "@web3auth/modal/react";
 
 // Only XRPL-compatible wallet options
 const walletOptions = [
@@ -67,6 +73,9 @@ export function WalletConnect() {
     exists: boolean | null
     message: string
   } | null>(null)
+
+  const { connect, isConnected, loading: connectLoading, error: connectError } = useWeb3AuthConnect();
+  const { disconnect, loading: disconnectLoading, error: disconnectError } = useWeb3AuthDisconnect();
 
   const validateAddressFormat = (address: string) => {
     if (!address) {
@@ -364,7 +373,7 @@ const [qrUrl, setQrUrl] = useState("")
 
 
           <Button
-            onClick={handleConnect}
+            onClick={() => connect()}
             disabled={
               !selectedWallet ||
               state.isConnecting ||

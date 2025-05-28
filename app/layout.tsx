@@ -4,17 +4,9 @@ import localFont from "next/font/local"
 import "./globals.css"
 import { AppProvider } from "@/lib/context"
 import { Toaster } from "@/components/ui/toaster"
+import { Web3AuthProvider } from "@web3auth/modal/react";
+import web3AuthContextConfig from "@/lib/web3auth";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff2",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-})
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff2",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-})
 
 export const metadata: Metadata = {
   title: "XRPL Wallet",
@@ -29,11 +21,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body >
+        <Web3AuthProvider config={web3AuthContextConfig}>
         <AppProvider>
           {children}
           <Toaster />
         </AppProvider>
+        </Web3AuthProvider>
       </body>
     </html>
   )
