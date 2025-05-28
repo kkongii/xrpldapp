@@ -1,0 +1,5 @@
+const geistMono = localFont({
+  src: "./fonts/GeistMonoVF.woff2",
+  variable: "--font-geist-mono",
+  weight: "100 900",
+})
