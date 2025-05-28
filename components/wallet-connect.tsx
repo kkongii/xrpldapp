@@ -102,6 +102,10 @@ export function WalletConnect() {
     }
   }
 
+
+const [qrUrl, setQrUrl] = useState("")
+
+
   const handleConnect = async () => {
     if (!selectedWallet) return
 
@@ -131,12 +135,40 @@ export function WalletConnect() {
 
         walletAddress = manualAddress.trim()
         console.log("Using manual XRPL address:", walletAddress)
+  
       } else if (selectedWallet === "XUMM") {
-        // Simulate XUMM connection
-        await new Promise((resolve) => setTimeout(resolve, 2000))
-        walletAddress = DEMO_ADDRESSES[0]
-        console.log("Simulating XUMM connection with demo address:", walletAddress)
-      } else {
+      // 실제 XUMM 로그인 연동
+      const res = await fetch("http://localhost:4000/xumm-login")
+      const data = await res.json()
+
+     setQrUrl(data.qr)
+      const uuid = data.uuid
+
+      // QR을 화면에 표시하거나, 모달에 넣어도 됨
+      const confirmed = window.confirm(
+        "Scan this QR with your XUMM app to connect your wallet.\n\nClick OK after scanning."
+      )
+
+      if (!confirmed) throw new Error("XUMM connection cancelled by user")
+
+      // 지갑 주소 수신을 위한 polling
+      const poll = async () => {
+        const tx = await fetch(`http://localhost:4000/xumm-status/${uuid}`).then((r) => r.json())
+        return tx
+      }
+
+      let result = null
+      for (let i = 0; i < 10; i++) {
+        result = await poll()
+        if (result?.account) break
+        await new Promise((res) => setTimeout(res, 1500))
+      }
+
+      if (!result || !result.account) throw new Error("XUMM connection timed out")
+
+      walletAddress = result.account
+      console.log("Connected XUMM wallet address:", walletAddress)
+    } else {
         throw new Error("Unsupported wallet type for XRPL")
       }
 
@@ -322,6 +354,14 @@ export function WalletConnect() {
               </div>
             </div>
           )}
+
+          {qrUrl && (
+            <div className="text-center">
+              <p className="text-sm text-gray-600 mb-2">Scan with XUMM App:</p>
+             <img src={qrUrl} alt="XUMM QR" className="w-48 h-48 mx-auto" />
+             </div>
+)}
+
 
           <Button
             onClick={handleConnect}
